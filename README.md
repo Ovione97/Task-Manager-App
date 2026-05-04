@@ -28,6 +28,13 @@ https://task-manager-app-production-a546.up.railway.app
 - JavaScript
 - Railway
 
+## Screenshots
+
+<p align="center">
+  <img src="./screenshots/Create + filters.jpg" alt="Create and Filters" width="48%" />
+  <img src="./screenshots/Log in.jpg" alt="Log in" width="48%" />
+</p>
+
 ## Local Setup (if you don't want to use the Live Demo)
 
 Clone the repository, install dependencies, create a `.env` file, run the SQL in `schema.sql`, and start the server.
