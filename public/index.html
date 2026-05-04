@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- =========================================================
+         1. Basic page setup
+         Character encoding, mobile responsiveness, title, and CSS
+         ========================================================= -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Task Manager</title>
+    <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+<div class="container">
+    <!-- =====================================================
+         2. Page header
+         Main title, short description, auth status, and controls
+         ===================================================== -->
+    <div class="page-header">
+        <div>
+            <h1>Task Manager</h1>
+            <p class="muted">
+                Manage your personal tasks, priorities, and deadlines.
+            </p>
+        </div>
+
+        <div class="header-actions">
+            <span id="currentUserText" class="muted">Please log in to continue.</span>
+
+            <button
+                    type="button"
+                    id="showAccountButton"
+                    class="text-action is-hidden"
+            >
+                Account
+            </button>
+
+            <button
+                    type="button"
+                    id="logoutButton"
+                    class="text-action danger-text-action is-hidden"
+            >
+                Logout
+            </button>
+        </div>
+    </div>
+
+    <!-- Global message area for success and error feedback -->
+    <div id="messageBox"></div>
+
+    <!-- =====================================================
+         3. View action toolbar
+         App-specific controls for toggling panels
+         ===================================================== -->
+    <div class="view-actions">
+        <button
+                type="button"
+                id="toggleCreateButton"
+                class="text-action is-hidden"
+        >
+            Hide Create
+        </button>
+
+        <button
+                type="button"
+                id="toggleFiltersButton"
+                class="text-action is-hidden"
+        >
+            Hide Filters
+        </button>
+    </div>
+
+    <!-- =====================================================
+         4. Auth section
+         Shown only when the user is logged out
+         Login appears first, register is shown on demand
+         ===================================================== -->
+    <div class="card" id="authSection">
+        <!-- =================================================
+             5. Login view
+             Default auth screen shown to logged-out users
+             ================================================= -->
+        <div id="loginView">
+            <h2>Login</h2>
+            <p class="muted">
+                Log in to access your tasks.
+            </p>
+
+            <form id="loginForm">
+                <div class="grid">
+                    <div>
+                        <label for="loginEmail">Email</label>
+                        <input
+                                id="loginEmail"
+                                name="loginEmail"
+                                type="email"
+                                placeholder="Enter your email"
+                                autocomplete="email"
+                                required
+                        />
+                    </div>
+
+                    <div>
+                        <label for="loginPassword">Password</label>
+                        <input
+                                id="loginPassword"
+                                name="loginPassword"
+                                type="password"
+                                placeholder="Enter your password"
+                                autocomplete="current-password"
+                                required
+                        />
+                    </div>
+                </div>
+
+                <div class="actions" style="margin-top: 14px;">
+                    <button type="submit">Login</button>
+                    <button
+                            type="button"
+                            class="secondary"
+                            id="showRegisterButton"
+                    >
+                        Create Account
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- =================================================
+             6. Register view
+             Hidden by default and shown when requested
+             ================================================= -->
+        <div id="registerView" class="is-hidden">
+            <h2>Create Account</h2>
+            <p class="muted">
+                Register to start managing your personal tasks.
+            </p>
+
+            <form id="registerForm">
+                <div class="grid">
+                    <div>
+                        <label for="registerName">Name</label>
+                        <input
+                                id="registerName"
+                                name="registerName"
+                                type="text"
+                                placeholder="Enter your name"
+                                autocomplete="name"
+                                required
+                        />
+                    </div>
+
+                    <div>
+                        <label for="registerEmail">Email</label>
+                        <input
+                                id="registerEmail"
+                                name="registerEmail"
+                                type="email"
+                                placeholder="Enter your email"
+                                autocomplete="email"
+                                required
+                        />
+                    </div>
+
+                    <div>
+                        <label for="registerPassword">Password</label>
+                        <input
+                                id="registerPassword"
+                                name="registerPassword"
+                                type="password"
+                                placeholder="At least 8 characters"
+                                autocomplete="new-password"
+                                required
+                        />
+                    </div>
+                </div>
+
+                <div class="actions" style="margin-top: 14px;">
+                    <button type="submit">Create Account</button>
+                    <button
+                            type="button"
+                            class="secondary"
+                            id="showLoginButton"
+                    >
+                        Back to Login
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- =====================================================
+         7. Account section
+         Shown only when the user is logged in and opens account
+         ===================================================== -->
+    <div class="card is-hidden" id="accountSection">
+        <div class="page-header" style="margin-bottom: 20px;">
+            <div>
+                <h2>Account</h2>
+                <p class="muted">
+                    Manage your profile, password, and account settings.
+                </p>
+            </div>
+
+            <div class="panel-buttons">
+                <button type="button" id="backToTasksButton" class="secondary">
+                    Back to Tasks
+                </button>
+            </div>
+        </div>
+
+        <!-- Profile update form -->
+        <form id="profileForm">
+            <h2>Profile</h2>
+
+            <div class="grid">
+                <div>
+                    <label for="profileName">Name</label>
+                    <input
+                            id="profileName"
+                            name="profileName"
+                            type="text"
+                            placeholder="Update your name"
+                            autocomplete="name"
+                    />
+                </div>
+
+                <div>
+                    <label for="profileEmail">Email</label>
+                    <input
+                            id="profileEmail"
+                            name="profileEmail"
+                            type="email"
+                            placeholder="Update your email"
+                            autocomplete="email"
+                    />
+                </div>
+            </div>
+
+            <div class="actions" style="margin-top: 14px;">
+                <button type="submit">Save Profile</button>
+            </div>
+        </form>
+
+        <hr class="account-divider" />
+
+        <!-- Password change form -->
+        <form id="passwordForm">
+            <h2>Change Password</h2>
+
+            <div class="grid">
+                <div>
+                    <label for="currentPassword">Current Password</label>
+                    <input
+                            id="currentPassword"
+                            name="currentPassword"
+                            type="password"
+                            placeholder="Enter current password"
+                            autocomplete="current-password"
+                    />
+                </div>
+
+                <div>
+                    <label for="newPassword">New Password</label>
+                    <input
+                            id="newPassword"
+                            name="newPassword"
+                            type="password"
+                            placeholder="Enter new password"
+                            autocomplete="new-password"
+                    />
+                </div>
+            </div>
+
+            <div class="actions" style="margin-top: 14px;">
+                <button type="submit" class="secondary">Update Password</button>
+            </div>
+        </form>
+
+        <hr class="account-divider" />
+
+        <!-- Account deletion form -->
+        <form id="deleteAccountForm">
+            <h2>Danger Zone</h2>
+            <p class="muted">
+                Deleting your account will permanently remove your profile and all your tasks.
+            </p>
+
+            <div class="grid">
+                <div>
+                    <label for="deleteAccountPassword">Confirm Password</label>
+                    <input
+                            id="deleteAccountPassword"
+                            name="deleteAccountPassword"
+                            type="password"
+                            placeholder="Enter your password"
+                            autocomplete="current-password"
+                    />
+                </div>
+            </div>
+
+            <div class="actions" style="margin-top: 14px;">
+                <button type="submit" class="danger">Delete Account</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- =====================================================
+         8. Main layout
+         Shown only when the user is logged in
+         Sidebar = create form + filters
+         Content = task list + pagination
+         ===================================================== -->
+    <div class="layout is-hidden" id="appLayout">
+        <!-- =================================================
+             9. Sidebar
+             Contains the task form and filtering controls
+             ================================================= -->
+        <div class="sidebar" id="sidebarPanel">
+            <!-- Create / Edit task form -->
+            <div class="card" id="createPanel">
+                <h2 id="formTitle">Create Task</h2>
+
+                <form id="taskForm">
+                    <div class="grid">
+                        <div>
+                            <label for="title">Title</label>
+                            <input
+                                    id="title"
+                                    name="title"
+                                    type="text"
+                                    placeholder="Enter task title"
+                                    required
+                            />
+                        </div>
+
+                        <div>
+                            <label for="priority">Priority</label>
+                            <select id="priority" name="priority">
+                                <option value="medium">Medium</option>
+                                <option value="low">Low</option>
+                                <option value="high">High</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="dueDate">Due Date</label>
+                            <input id="dueDate" name="dueDate" type="date" />
+                        </div>
+
+                        <div>
+                            <label for="completed">Completed</label>
+                            <select id="completed" name="completed">
+                                <option value="false">No</option>
+                                <option value="true">Yes</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="actions" style="margin-top: 14px;">
+                        <button type="submit" id="submitButton">Create Task</button>
+                        <button
+                                type="button"
+                                class="secondary is-hidden"
+                                id="cancelEditButton"
+                        >
+                            Cancel Edit
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Filter and sorting controls -->
+            <div class="card" id="filtersPanel">
+                <h2>Filters</h2>
+
+                <div class="grid">
+                    <div>
+                        <label for="filterCompleted">Completed</label>
+                        <select id="filterCompleted">
+                            <option value="">All</option>
+                            <option value="true">Completed</option>
+                            <option value="false">Not completed</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="filterPriority">Priority</label>
+                        <select id="filterPriority">
+                            <option value="">All</option>
+                            <option value="low">Low</option>
+                            <option value="medium">Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="sortBy">Sort By</label>
+                        <select id="sortBy">
+                            <option value="id">Creation Order</option>
+                            <option value="title">Title</option>
+                            <option value="priority">Priority</option>
+                            <option value="completed">Completed</option>
+                            <option value="dueDate">Due Date</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="order">Order</label>
+                        <select id="order">
+                            <option value="asc">Ascending</option>
+                            <option value="desc">Descending</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="limit">Tasks per page</label>
+                        <select id="limit">
+                            <option value="5">5</option>
+                            <option value="10" selected>10</option>
+                            <option value="20">20</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="actions" style="margin-top: 14px;">
+                    <button type="button" id="applyFiltersButton">Apply Filters</button>
+                    <button type="button" class="secondary" id="resetFiltersButton">
+                        Reset
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- =================================================
+             10. Main content area
+             Displays tasks and pagination controls
+             ================================================= -->
+        <div class="content">
+            <div class="card">
+                <h2>Tasks</h2>
+
+                <!-- Task cards are inserted here dynamically by main.js -->
+                <div id="taskList" class="task-list"></div>
+
+                <!-- Pagination controls -->
+                <div class="pagination">
+                    <button type="button" class="secondary" id="prevPageButton">
+                        Previous
+                    </button>
+                    <span id="pageInfo" class="muted"></span>
+                    <button type="button" class="secondary" id="nextPageButton">
+                        Next
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="main.js"></script>
+</body>
+</html>
